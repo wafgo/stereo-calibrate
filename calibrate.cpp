@@ -204,13 +204,6 @@ void saveImages(Mat leftImage, Mat rightImage, int pairIndex)
 void calibrateStereoCamera(Size imageSize)
 {
 	vector<vector<Point3f> > objectPoints;
-//	int err_fd;
-//	char tmp[100];
-//
-//	if ((err_fd = open("error.txt", O_RDWR | O_CREAT)) < 0) {
-//		perror("open error file");
-//		return;
-//	}
 
 	objectPoints.resize(noOfStereoPairs);
 	for (int i = 0; i < noOfStereoPairs; i++) {
@@ -230,9 +223,6 @@ void calibrateStereoCamera(Size imageSize)
 					+ CALIB_FIX_K3 + CALIB_FIX_K4 + CALIB_FIX_K5,
 			TermCriteria(TermCriteria::COUNT + TermCriteria::EPS, 100, 1e-5));
 	cout << "RMS Error: " << rms << "\n";
-//	snprintf(tmp, sizeof(tmp), "RMS Error = %lf\n", rms);
-//
-//	write(err_fd, tmp, strlen(tmp));
 
 	double err = 0;
 	int npoints = 0;
@@ -257,9 +247,6 @@ void calibrateStereoCamera(Size imageSize)
 		npoints += npt;
 	}
 	cout << "Average Reprojection Error: " << err / npoints << endl;
-//	snprintf(tmp, sizeof(tmp), "Average Reprojection Error: = %lf\n", double((double)err / (double)npoints));
-//	write(err_fd, tmp, strlen(tmp));
-//	close(err_fd);
 
 	FileStorage fs("intrinsics.yml", FileStorage::WRITE);
 	if (fs.isOpened()) {
