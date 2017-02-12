@@ -1,7 +1,7 @@
 CC = g++
 CAM = ELP
-
-CFLAGS += -D$(CAM) -I/usr/local/include/opencv -I/usr/local/include -L/usr/local/lib 
+#CAM = ZED
+CFLAGS += -D$(CAM) -I/usr/local/include/opencv -I/usr/local/include -L/usr/local/lib -MMD
 LIBS += -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired \
 		-lopencv_ccalib -lopencv_dnn -lopencv_dpm -lopencv_fuzzy -lopencv_line_descriptor -lopencv_optflow -lopencv_plot \
 		-lopencv_reg -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_rgbd -lopencv_surface_matching \
@@ -11,21 +11,29 @@ LIBS += -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_aruco -
 
 
 obj-y := calibrate.o mjpeg.o
-target := zed-calibration.elf
+target := stereo-calibrate.elf
 cal_dir := $(addprefix CAL_,$(shell date '+%d-%b-%Y-%H-%M-%s'))
 backup_dir := backup/$(CAM)/$(cal_dir)
-	
-all: $(obj-y)
-	$(CC) $(CFLAGS) -o $(target) $(obj-y) $(LIBS)
+
+.PHONY: all create_backup clean
+
+all: $(target)
+
+$(target): $(obj-y)
+	@echo "[LD] $@ from $?"
+	@$(CC) $(CFLAGS) -o $(target) $(obj-y) $(LIBS)
 	
 create_backup:
-	mkdir $(backup_dir) && cp *.jpg extrinsics.yml intrinsics.yml $(backup_dir)
+	@echo "[BACKUP] to $(backup_dir)"
+	@mkdir $(backup_dir) && cp *.jpg extrinsics.yml intrinsics.yml $(backup_dir)
 	
 clean:
-	rm -f *.o *.elf *.jpg *.yml
+	@echo [RM]
+	@rm -f *.o *.elf *.jpg *.yml *.d
 	
 %.o: %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "[CC] $<"
+	@$(CC) $(CFLAGS) -c $< -o $@
 	
 %.d : ;
 
