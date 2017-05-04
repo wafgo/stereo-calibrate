@@ -5,65 +5,6 @@
  *      Author: sefo
  */
 
-/* *************** Stereo Camera Calibration **************************
- This code can be used to calibrate stereo cameras to get the intrinsic
- and extrinsic files.
- This code also generated rectified image, and also shows RMS Error and Reprojection error
- to find the accuracy of calibration.
- You can load saved stereo images or use this code to capture them in real time.
- Keyboard Shortcuts for real time (ie clicking stereo image at run time):
- 1. Default Mode: Detecting (Which detects chessboard corners in real time)
- 2. 'c': Starts capturing stereo images (With 2 Sec gap, This can be changed by changing 'timeGap' macro)
- 3. 'p': Process and Calibrate (Once all the images are clicked you can press 'p' to calibrate)
- Usage: StereoCameraCallibration [params]
- --cam1 (value:0)                           Camera 1 Index
- --cam2 (value:2)                           Camera 2 Index
- --dr, --folder (value:.)                   Directory of images
- -h, --height (value:6)                     Height of the board
- --help (value:true)                        Prints this
- --images, -n (value:40)                    No of stereo pair images
- --post, --postfix (value:jpg)              Image extension. Ex: jpg,png etc
- --prefixleft, --prel (value:image_left_)   Left image name prefix. Ex: image_left_
- --prefixright, --prer (value:image_right_) Right image name postfix. Ex: image_right_
- --realtime, --rt (value:1)                 Clicks stereo images before calibration. Use if you do not have stereo pair images saved
- -w, --width (value:7)                      Width of the board
- Example:   ./stereo_calib                                              Clicks stereo images at run time.
- ./stereo_calib -rt=0 -prel=left_ -prer=right_ -post=jpg     RealTime id off ie images should be loaded from disk. With images named left_1.jpg, right_1.jpg etc.
- Cheers
- Abhishek Upperwal
- ***********************************************************************/
-/* *************** License:**************************
- By downloading, copying, installing or using the software you agree to this license.
- If you do not agree to this license, do not download, install, copy or use the software.
- License Agreement
- For Open Source Computer Vision Library
- (3-clause BSD License)
- Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- Neither the names of the copyright holders nor the names of the contributors may be used to endorse or promote products derived from this software without specific prior written permission.
- This software is provided by the copyright holders and contributors “as is” and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall copyright holders or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of
- the use of this software, even if advised of the possibility of such damage.
- ************************************************** */
-
-/* ************* Original reference:**************
- Oct. 3, 2008
- BOOK:It would be nice if you cited it:
- Learning OpenCV: Computer Vision with the OpenCV Library
- by Gary Bradski and Adrian Kaehler
- Published by O'Reilly Media, October 3, 2008
- AVAILABLE AT:
- http://www.amazon.com/Learning-OpenCV-Computer-Vision-Library/dp/0596516134
- Or: http://oreilly.com/catalog/9780596516130/
- ISBN-10: 0596516134 or: ISBN-13: 978-0596516130
- OPENCV WEBSITES:
- Homepage:      http://opencv.org
- Online docs:   http://docs.opencv.org
- Q&A forum:     http://answers.opencv.org
- Issue tracker: http://code.opencv.org
- GitHub:        https://github.com/Itseez/opencv/
- ************************************************** */
-
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -105,10 +46,7 @@ static void help()
 	cout << "\n/******* HELP ENDS *********/\n\n";
 }
 
-enum Modes
-{
-	DETECTING, CAPTURING, CALIBRATING
-};
+enum Modes { DETECTING, CAPTURING, CALIBRATING };
 Modes mode = DETECTING;
 int noOfStereoPairs;
 int stereoPairIndex = 0, cornerImageIndex = 0;
