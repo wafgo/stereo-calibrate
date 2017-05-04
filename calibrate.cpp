@@ -2,7 +2,7 @@
  * calibrate.cpp
  *
  *  Created on: 21.01.2017
- *      Author: sefo
+ *      Author: wadim mueller
  */
 
 #include <opencv2/calib3d/calib3d.hpp>
