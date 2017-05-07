@@ -362,8 +362,12 @@ void calibrateInRealTime(int cam1, int cam2)
 		exit(-1);
 	}
 #else
-	v4l2_init(0, "/dev/video0");
-	v4l2_init(1, "/dev/video1");
+	char cam1_name[30];
+	char cam2_name[30];
+	snprintf(cam1_name, sizeof(cam1_name), "/dev/video%d", cam1);
+	snprintf(cam2_name, sizeof(cam2_name), "/dev/video%d", cam2);
+	v4l2_init(0, cam1_name);
+	v4l2_init(1, cam2_name);
 #endif
 
 
@@ -491,7 +495,7 @@ int main(int argc, char** argv)
 			"{prer prefixright|image_right_|Right image name postfix. Ex: image_right_}"
 			"{post postfix|jpg|Image extension. Ex: jpg,png etc}"
 			"{cam1|0|Camera 1 Index}"
-			"{cam2|2|Camera 2 Index}";
+			"{cam2|1|Camera 2 Index}";
 	CommandLineParser parser(argc, argv, keys);
 	if (parser.has("help")) {
 		parser.printMessage();
