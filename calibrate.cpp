@@ -206,7 +206,7 @@ void calibrateStereoCamera(Size imageSize)
 	Mat rmap[2][2];
 	initUndistortRectifyMap(cameraMatrix[0], distCoeffs[0], R1, P1, imageSize, CV_16SC2, rmap[0][0], rmap[0][1]);
 	initUndistortRectifyMap(cameraMatrix[1], distCoeffs[1], R2, P2, imageSize, CV_16SC2, rmap[1][0], rmap[1][1]);
-	Mat canvas;
+	Mat canvas, canvas_unrect;
 	double sf;
 	int w, h;
 	if (!isVerticalStereo) {
@@ -214,14 +214,17 @@ void calibrateStereoCamera(Size imageSize)
 		w = cvRound(imageSize.width * sf);
 		h = cvRound(imageSize.height * sf);
 		canvas.create(h, w * 2, CV_8UC3);
+		canvas_unrect.create(h, w * 2, CV_8UC3);
 	} else {
 		sf = 300. / MAX(imageSize.width, imageSize.height);
 		w = cvRound(imageSize.width * sf);
 		h = cvRound(imageSize.height * sf);
 		canvas.create(h * 2, w, CV_8UC3);
+		canvas_unrect.create(h * 2, w, CV_8UC3);
 	}
 	String file;
 	namedWindow("rectified");
+	namedWindow("unrectified");
 	for (int i = 0; i < noOfStereoPairs; i++) {
 		for (int j = 0; j < 2; j++) {
 			if (j == 0) {
@@ -231,22 +234,30 @@ void calibrateStereoCamera(Size imageSize)
 			}
 			ostringstream st;
 			st << dir << "/" << file << i + 1 << "." << postfix;
-			Mat img = imread(st.str().c_str()), rimg, cimg;
+			Mat img = imread(st.str().c_str()), rimg, cimg, urimg;
 			remap(img, rimg, rmap[j][0], rmap[j][1], INTER_LINEAR);
 			cimg = rimg;
+			urimg = img;
 			Mat canvasPart = !isVerticalStereo ? canvas(Rect(w * j, 0, w, h)) : canvas(Rect(0, h * j, w, h));
+			Mat canvasUnrectPart = !isVerticalStereo ? canvas_unrect(Rect(w * j, 0, w, h)) : canvas_unrect(Rect(0, h * j, w, h));
 			resize(cimg, canvasPart, canvasPart.size(), 0, 0, INTER_AREA);
+			resize(urimg, canvasUnrectPart, canvasUnrectPart.size(), 0, 0, INTER_AREA);
 			Rect vroi(cvRound(validROI[j].x * sf), cvRound(validROI[j].y * sf), cvRound(validROI[j].width * sf),
 					cvRound(validROI[j].height * sf));
 			rectangle(canvasPart, vroi, Scalar(0, 0, 255), 3, 8);
 		}
 		if (!isVerticalStereo)
-			for (int j = 0; j < canvas.rows; j += 16)
+			for (int j = 0; j < canvas.rows; j += 16) {
 				line(canvas, Point(0, j), Point(canvas.cols, j), Scalar(0, 255, 0), 1, 8);
+				line(canvas_unrect, Point(0, j), Point(canvas_unrect.cols, j), Scalar(0, 255, 0), 1, 8);
+			}
 		else
-			for (int j = 0; j < canvas.cols; j += 16)
+			for (int j = 0; j < canvas.cols; j += 16) {
 				line(canvas, Point(j, 0), Point(j, canvas.rows), Scalar(0, 255, 0), 1, 8);
+				line(canvas_unrect, Point(j, 0), Point(j, canvas_unrect.rows), Scalar(0, 255, 0), 1, 8);
+			}
 		imshow("rectified", canvas);
+		imshow("unrectified", canvas_unrect);
 	}
 }
 
